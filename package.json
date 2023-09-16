@@ -1,7 +1,7 @@
 {
-  "name": "javabin",
+  "name": "fp-lib",
   "version": "1.0.0",
-  "description": "",
+  "description": "Library with common constructs for functional programming",
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -9,8 +9,8 @@
     "build": "tsup src/index.ts --minify"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Ole Berg",
+  "license": "MIT",
   "dependencies": {
     "dotenv": "^16.3.1",
     "fp-ts": "^2.16.1"
