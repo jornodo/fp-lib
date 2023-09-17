@@ -1,23 +1,17 @@
 import { log } from 'console';
 import { Option } from './fp-lib/Option';
+import { Stream } from './fp-lib/Stream';
+import { GStream } from './fp-lib/GStream';
 
 console.log('Hello World!');
 
 const a: Option<string> = Option.of('Hello World!');
 
-// console.log(a);
-// console.log(a.of('test'))
-
 const b = Option.of(5);
-
-// console.log(b.map((val) => val + 1).getOrElse(0));
 
 const c = Option.of(undefined);
 
-// console.log(Option.of(undefined)
-//   .map((val) => val + 1)
-//   .map((val) => val + 1)
-//   .getOrElse(0));
+
 
 
 const l = [1, 2, 3, 4, undefined, 5];
@@ -40,12 +34,55 @@ d.forEach((o) => o.ifPresent((val) => t.push(val as number)));
 log(t);
 log('------------------')
 
- const li = [1, 2, 3, 4, undefined, 5];
- 
-li.map(o => Option.of(o)).map((o) => o.tryCatch((val) => <number> val + 1))
-.forEach((o) => log(o.get() instanceof Error ? (o.get() as Error).message : o.get()))
+const li = [1, 2, 3, 4, undefined, 5];
 
-log('------------------')
+li.map(val => Option.of(val))
+  .filter((o) => o.isPresent())
+  .map(o => o.orElseGet(0))
+  .forEach((val) => log(val));
 
-const one = Option.of(1);
+
+  log('------------------')
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+const ls = GStream.of([1, 2, 3, 4, 5, 6, 7, 8]);
+log(
+  ls.filter((val) => val % 2 === 0)
+    .getAny()
+  );
+  
+
+
 
