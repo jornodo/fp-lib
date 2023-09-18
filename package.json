@@ -12,6 +12,7 @@
   "author": "Ole Berg",
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.5.0",
     "dotenv": "^16.3.1",
     "fp-ts": "^2.16.1"
   },
