@@ -1,4 +1,6 @@
-export class Stream<T> implements IStream<T, Stream<T>>{
+import { AsyncStream } from "./AsyncStream";
+
+export class Stream<T> {
     constructor(protected generator: Generator<T, void, unknown>) {}
 
     static of<T> (elements: T[]): Stream<T> {
@@ -12,7 +14,7 @@ export class Stream<T> implements IStream<T, Stream<T>>{
     }
 
     static infinite(): Stream<number> {
-        let i = 1;
+        let i = 0;
         function* generator() {
             while(true) {
                 yield i++;
@@ -64,6 +66,7 @@ export class Stream<T> implements IStream<T, Stream<T>>{
         return new Stream(generator());
     }
 
+
     map<U>(mapper: (element: T) => U): Stream<U> {
         const self = this;
 
@@ -77,12 +80,17 @@ export class Stream<T> implements IStream<T, Stream<T>>{
         return new Stream(generator());
     }
 
-    async *asyncMap<U>(mapper: (element: T) => U | Promise<U>): AsyncGenerator<U, void, unknown> {
-        for await (const element of this.generator) {
-          const mappedElement = await Promise.resolve(mapper(element));
-          yield mappedElement;
-        }
+  // Method to convert Stream to AsyncStream
+  toAsyncStream<U>(mapper: (element: T) => Promise<U>): AsyncStream<U> {
+    const self = this;
+    async function* generator() {
+      for (const element of self.generator) {
+        yield await mapper(element);
       }
+    }
+    return new AsyncStream(generator());
+  }
+
 
     // terminal operations
     forEach(consumer: (element: T) => void): void {

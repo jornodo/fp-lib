@@ -1,9 +1,9 @@
 import { log } from 'console';
 import { Option } from './fp-lib/Option';
 import { Stream } from './fp-lib/Stream';
-import { Stream } from './fp-lib/Stream';
 import get from 'axios';
-
+import { printAllResults } from '../Test/Benchmark';
+/*
 console.log('Hello World!');
 
 const a: Option<string> = Option.of('Hello World!');
@@ -80,19 +80,59 @@ log(ts1.concat(ts2)
   
 log('------------------')
 
- //Testing api operations
+//  //Testing api operations
  const url = 'https://swapi.dev/api/people/';
 
  const getPeople = async (num: number) => {
   return await get(`${url}${num}`);
  }
 
- const people = Stream.infinite()
-   .map(val => val + 2)
-   .map(async (val) => await getPeople(val).then((res) => res.data.name))
-   .getNElements(1)
-   .forEach(async (val) => log(await val));
 
 
+ // ---------------
+*/
+const isPrime = (num: number): boolean => {
+for(let i = 2, s = Math.sqrt(num); i <= s; i++) {
+    if(num % i === 0) return false;
+}
+return num > 1;
+}
+
+log('------------------')
+const primes = Stream.infiniteFrom(10000000000000)
+  .map(val => val + 2 ) // there can't be an even prime number greater than 2
+  .filter(isPrime)
+  .getNElements(1);
+
+// short memoizing fib definition
+const fib = (n: number): number => {
+  const memo: number[] = [0, 1];
+  const fibHelper = (n: number): number => {
+    if (memo[n] !== undefined) {
+      return memo[n];
+    }
+    memo[n] = fibHelper(n - 1) + fibHelper(n - 2);
+    return memo[n];
+  }
+  return fibHelper(n);
+}
+
+const infiniteStream = Stream.infinite(); // Infinite stream of numbers
+
+const url = 'http://127.0.0.1:3000';
+
+const getPeople = async (num: number) => {
+ return await get(`${url}/people/${num}`);
+}
 
 
+const collected = infiniteStream
+  .filter(_ => _ < 100)
+  .map(fib) // Map to fibonacci numbers
+  .toAsyncStream((_) => Promise.resolve(_)) // Convert to AsyncStream
+  .filter(isPrime) // Filter prime numbers
+  .map(getPeople) // Map to api calls
+  .map((val) => val.data) // Extract data from response
+  .collect(5); // Collect 5 elements and return responses
+  
+collected.then((val) => log(val)); // Print results
